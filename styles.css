@@ -1,0 +1,51 @@
+nav{
+    background-color: black;
+}
+#face{
+    margin: 0px 0px 0px 50vw;
+    width: 180px;
+    height: 160px;
+}
+#contacts a{
+    color: lime;
+}
+
+#edu {
+    border: 1px solid lime;
+    border-collapse: collapse;
+}
+#edu td{
+    padding: 10px 10px;
+    border: 1px solid lime;
+}
+#edu th{
+    padding: 10px 10px;
+    border: 1px solid lime;
+}
+body {
+    margin: 0;
+    background-color: black;
+    color: lime;
+}
+
+main{
+    padding: 10px 20vw;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding: 5px 0;
+    margin: 0;
+}
+
+nav a {
+    color: lime;
+    text-decoration: none;
+    padding: 5px 20px;
+}
+
+
+nav li {
+    margin: 0 15px;
+}
