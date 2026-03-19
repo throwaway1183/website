@@ -1,35 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Project Website</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta charset="UTF-8">
+  <title>WhatsApp Wrapped</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-<nav>
-    <ul>
-        <a href = "./index.html">Home</a>
-        <a href = "./hobbies.html">Hobbies</a>
-        <a href = "./achievements.html">Achievements</a>
-        <a href = "./contact.html">Contact me</a>
-    </ul>
-</nav>
-    <main>
-        <h2 id = "home">Welcome</h2>
-        <p>This is my personal website.<br><br>The website was created using HTML and CSS. Currently i'm learning more about various tags available and how I can use them to make my website better.</p>
-        <br>
-        <h3>Education profile</h3>
-        <table id="edu">
-            <tr><th></th><th>year</th></tr>
-            <tr><td>IIT Bombay, Btech in Computer Science</td><td>2025-present</td></tr>
-            <tr><td>Narayana Schools</td><td>2019-2025</td></tr>
-            <tr><td>Kendriya Vidyalaya NAL</td><td>2013-2019</td></tr>
-        </table>
-        <h3>Hello</h3>
-        <p>There's nothing to talk about here so we could talk about how far computers have come.<br><br>Computers began as room sized giant machines working with the help of thousands of electron vacuum tubes. They produced loud sounds and drew enough electricity to dim nearby lightbulbs. Earlier systems like ENIAC had to be wired by hand and they could perform only basic calculations.<br> Needless to say, this computer is quite boring compared to todays standards.<br>However, the invention of the transistor, then the microchip, shrunk those bulky machines into reliable, affordable devices that fit on desks, and eventually into the slim laptops and smartphones we could carry everywhere, and that is interesting.<br></p>
 
-        <img id="face"src="./face.png"> 
+<!-- Background Layers -->
+<canvas id="bg-canvas"></canvas>
+<div id="blob-container"></div>
 
-    </main>
+<!-- App -->
+<div id="app">
+  <div id="slide-container"></div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
