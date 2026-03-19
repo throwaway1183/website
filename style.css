@@ -1,0 +1,311 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  overflow: hidden;
+  color: white;
+}
+
+/* ---------- GRADIENT BACKGROUND ---------- */
+body {
+  background: linear-gradient(-45deg, #1e1e2f, #7b61ff, #ff4ecd, #4cafef);
+  background-size: 400% 400%;
+  animation: gradientFlow 12s ease infinite;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---------- CANVAS ---------- */
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -2;
+}
+
+/* ---------- BLOBS ---------- */
+#blob-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: floatBlob linear infinite;
+}
+
+@keyframes floatBlob {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-150px) scale(1.2); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* ---------- APP ---------- */
+#app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+/* ---------- SLIDES ---------- */
+:root {
+  --slide-enter-duration: 1.25s;
+  --slide-exit-duration: 0.25s;
+  --slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slide,
+.intro-slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+  transition: opacity var(--slide-exit-duration) ease-in, transform var(--slide-exit-duration) ease-in;
+  pointer-events: none;
+}
+
+.slide.active,
+.intro-slide.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+  animation: slideIn var(--slide-enter-duration) var(--slide-ease);
+}
+
+.intro-slide.active {
+  animation: slideIn 2.5s var(--slide-ease);
+}
+
+@keyframes slideIn {
+  0%   { opacity: 0; transform: translateY(30px) scale(0.98); }
+  60%  { opacity: 1; transform: translateY(-10px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Animate slide content in with a staggered feel */
+.slide.active h1,
+.slide.active .stat,
+.slide.active .bar-row {
+  opacity: 0;
+  transform: translateY(15px);
+  animation: contentFadeIn 0.75s var(--slide-ease) forwards;
+}
+
+/* Profile slide scrolling */
+.profile-slide {
+  overflow-y: auto;
+  padding-right: 20px; /* allow room for scrollbar */
+  -webkit-overflow-scrolling: touch;
+}
+
+.slide.active:not(.profile-slide) h1 {
+  animation: contentFadeIn 0.75s var(--slide-ease) 0.25s forwards,
+             headingLift 0.5s var(--slide-ease) 1.3s forwards;
+}
+.slide.active.profile-slide h1 {
+  animation: contentFadeIn 0.75s var(--slide-ease) 0.25s forwards;
+}
+.slide.active .stat { animation-delay: 1.3s; }
+.slide.active .stat.secondary { animation-delay: 1.6s; }
+.slide.active .bar-row { animation-delay: 1.7s; }
+
+.intro-slide.active h1 {
+  animation: contentFadeIn 1.5s var(--slide-ease) 0.5s forwards;
+}
+
+@keyframes contentFadeIn {
+  0%   { opacity: 0; transform: translateY(15px) scale(0.9); }
+  60%  { opacity: 1; transform: translateY(-5px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes headingLift {
+  from { transform: translateY(0); }
+  to { transform: translateY(-40px); }
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.stat {
+  font-size: 1.5rem;
+  margin: 10px 0;
+  opacity: 0;
+  transform: translateY(15px) scale(0.9);
+  transition: all 0.5s ease;
+}
+
+.stat:hover {
+  transform: scale(1.05);
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+
+/* ---------- CHART ---------- */
+.chart {
+  width: 60%;
+}
+
+.bar-row {
+  margin: 15px 0;
+}
+
+.bar-label {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bar-label span:first-child {
+  font-style: italic;
+}
+
+.bar-bg {
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  height: 25px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9800, #ff5722);
+  width: 0;
+  border-radius: 10px;
+  transition: width 1s ease;
+}
+
+.slide.profile-slide {
+  justify-content: flex-start;
+  padding-top: 20px;
+  overflow-y: auto;
+}
+#controls {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+#profile-selector {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.7);
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+#profile-selector h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+#profile-selector label {
+  display: block;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+#profile-selector input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.profile-slide.active .stat {
+  animation: contentFadeIn 0.5s var(--slide-ease) forwards;
+}
+
+.profile-slide.active .activity-chart {
+  animation: contentFadeIn 0.5s var(--slide-ease) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  display: flex;
+  justify-content: space-around;
+  align-items: end;
+  margin: 20px 0;
+}
+
+.activity-bar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.activity-value {
+  font-size: 10px;
+  color: white;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+.activity-bar {
+  width: 15px;
+  height: 60px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 7px 7px 0 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+}
+
+.activity-fill {
+  width: 100%;
+  background: linear-gradient(to top, #ff4500, #ff6b35);
+  border-radius: 7px 7px 0 0;
+  position: absolute;
+  bottom: 0;
+  height: 0;
+  transition: height 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.activity-label {
+  margin-top: 5px;
+  font-size: 10px;
+  color: white;
+  opacity: 0.7;
+}
+
+.profile-option {
+  display: inline-block;
+  margin: 10px;
+  padding: 10px 20px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.profile-option:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+.profile-option.selected {
+  background: rgba(255,255,255,0.6);
+  box-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
