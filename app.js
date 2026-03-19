@@ -1,6 +1,7 @@
 let slides = [];
 let currentSlide = 0;
 let data = null;
+let selectedProfiles = new Set();
 
 /* ---------------- MOCK DATA ---------------- */
 function loadData() {
@@ -18,9 +19,9 @@ function loadData() {
       hype_person: "Charlie"
     },
     people: {
-      Alice: { total_messages: 120, total_words: 1000, avg_response_time: 5, most_used_emoji: ["😂","🔥","😭"] },
-      Bob: { total_messages: 90, total_words: 850, avg_response_time: 8, most_used_emoji: ["🤣","😎","👍"] },
-      Charlie: { total_messages: 200, total_words: 1500, avg_response_time: 2, most_used_emoji: ["🔥","💀","😂"] }
+      Alice: { total_messages: 120, total_words: 1000, avg_response_time: 5, most_used_emoji: ["😂","🔥","😭"], activity: { '00:00': 5, '06:00': 10, '12:00': 20, '18:00': 15, '23:00': 8 } },
+      Bob: { total_messages: 90, total_words: 850, avg_response_time: 8, most_used_emoji: ["🤣","😎","👍"], activity: { '01:00': 3, '07:00': 8, '13:00': 15, '19:00': 12, '22:00': 6 } },
+      Charlie: { total_messages: 200, total_words: 1500, avg_response_time: 2, most_used_emoji: ["🔥","💀","😂"], activity: { '02:00': 10, '08:00': 25, '14:00': 30, '20:00': 20, '23:59': 15 } }
     }
   };
 
@@ -30,6 +31,7 @@ function loadData() {
 /* ---------------- INIT ---------------- */
 function init() {
   buildSlides();
+  buildProfiles();
   showSlide(0);
   initBlobs();
   initParticles();
@@ -48,8 +50,7 @@ function buildSlides() {
   slides.push(createSlide(`<h1>🌙 Night Owl</h1><div class="stat primary">${data.group.night_owl}</div><div class="stat secondary">Avg active: ${data.group.night_owl_avg_time}</div>`));
   slides.push(createSlide(`<h1>👻 Ghost</h1><div class="stat primary">${data.group.ghost}</div><div class="stat secondary">Max consecutive: ${data.group.ghost_max_consecutive} msgs</div>`));
 
-  const profileSlide = createSlide(renderProfiles(), false, "profile-slide");
-  slides.push(profileSlide);
+  slides.push(createSlide(`<h1>Profiles</h1><div id="profiles-content"></div>`, false, "profile-slide"));
 
   container.innerHTML = "";
   slides.forEach(s => container.appendChild(s));
@@ -76,6 +77,20 @@ function showSlide(i) {
   }
 
   slides[i].classList.add("active");
+
+  // Populate profiles content if needed
+  const profilesContent = slides[i].querySelector('#profiles-content');
+  if (profilesContent && !profilesContent.innerHTML) {
+    profilesContent.innerHTML = renderProfiles();
+  }
+
+  // Show/hide profile selector
+  const selector = document.getElementById('profile-selector');
+  if (slides[i].classList.contains('profile-slide')) {
+    selector.style.display = 'block';
+  } else {
+    selector.style.display = 'none';
+  }
 
   animateBars();
 
@@ -113,13 +128,42 @@ function animateBars() {
     document.querySelectorAll(".bar-fill").forEach(b => {
       b.style.width = b.dataset.width;
     });
+    document.querySelectorAll(".activity-fill").forEach(b => {
+      b.style.height = b.dataset.height;
+    });
   }, 100);
 }
 
-function renderProfiles() {
-  let html = `<h1>Profiles</h1>`;
+function renderActivity(activity, delay) {
+  let html = `<div class="activity-chart" style="animation-delay: ${delay}s;">`;
 
-  Object.entries(data.people).forEach(([name, p], index) => {
+  const entries = Object.entries(activity).sort(([a], [b]) => a.localeCompare(b));
+
+  const max = Math.max(...entries.map(([,v]) => v));
+
+  entries.forEach(([hour, v]) => {
+    const height = max > 0 ? (v / max) * 100 : 0;
+
+    html += `
+      <div class="activity-bar-container">
+        <div class="activity-value">${v}</div>
+        <div class="activity-bar">
+          <div class="activity-fill" data-height="${height}%"></div>
+        </div>
+        <div class="activity-label">${hour}</div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+function renderProfiles() {
+  let html = '';
+
+  selectedProfiles.forEach((name, index) => {
+    const p = data.people[name];
     const delay = 0.5 + index * 0.2;
 
     html += `
@@ -130,13 +174,40 @@ function renderProfiles() {
         ⏱ ${p.avg_response_time} min<br>
         ${p.most_used_emoji.join(" ")}
       </div>
+      ${renderActivity(p.activity, delay + 0.5)}
     `;
   });
 
   return html;
 }
 
-/* ---------------- BLOBS ---------------- */
+/* ---------------- PROFILES ---------------- */
+function buildProfiles() {
+  const list = document.getElementById("profile-list");
+
+  Object.keys(data.people).forEach(name => {
+    const label = document.createElement("label");
+    const cb = document.createElement("input");
+
+    cb.type = "checkbox";
+    cb.checked = true; // default selected
+    selectedProfiles.add(name);
+
+    cb.onchange = () => {
+      cb.checked ? selectedProfiles.add(name) : selectedProfiles.delete(name);
+      // Update the profiles slide content
+      const contentDiv = document.getElementById('profiles-content');
+      if (contentDiv) {
+        contentDiv.innerHTML = renderProfiles();
+        animateBars();
+      }
+    };
+
+    label.appendChild(cb);
+    label.append(name);
+    list.appendChild(label);
+  });
+}
 function initBlobs() {
   const container = document.getElementById("blob-container");
 
@@ -206,6 +277,13 @@ function initMouseTracking() {
 /* ---------------- START ---------------- */
 loadData();
 
-document.addEventListener('click', () => {
-  showSlide((currentSlide + 1) % slides.length);
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#profile-selector')) {
+    const isRightSide = e.clientX > window.innerWidth / 2;
+    if (isRightSide) {
+      showSlide((currentSlide + 1) % slides.length);
+    } else {
+      showSlide((currentSlide - 1 + slides.length) % slides.length);
+    }
+  }
 });
